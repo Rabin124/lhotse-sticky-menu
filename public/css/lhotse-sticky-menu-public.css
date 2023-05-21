@@ -1,0 +1,15 @@
+/**
+ * All of the CSS for your public-facing functionality should be
+ * included in this file.
+ */
+
+.lhotseSticky {
+	position: fixed !important;
+	width: 100%;
+	font-size: 100%;
+}
+
+
+/* .admin-bar .nav-secondary.lhotseSticky {
+	top: 32px;
+} */
