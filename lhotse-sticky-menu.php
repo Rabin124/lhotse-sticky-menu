@@ -74,6 +74,9 @@ register_deactivation_hook( __FILE__, 'deactivate_lhotse_sticky_menu' );
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-lhotse-sticky-menu.php';
 
+
+
+
 if ( ! function_exists( 'lhotse_sticky_menu_get_options' ) ) :
 	function lhotse_sticky_menu_get_options() {
 		$defaults = lhotse_sticky_menu_default_options();
@@ -142,29 +145,41 @@ if ( ! function_exists( 'lhotse_sticky_sidebar_default_options' ) ) :
 		} else {
 			return $default_options[ $option ];
 		}
+		
 	}
-
+	
 endif;
+
+// class of
 
 // sticky notification bar default options
 if ( ! function_exists( 'lhotse_sticky_notification_bar_default_options' ) ) :
-	function lhotse_sticky_notification_bar_default_options( $option = null ) {
+	 function lhotse_sticky_notification_bar_default_options( $option = null ) {
 		$default_options = array(
+			'enable' => true,
 			'sticky_desktop_notification_bar_postion' => 'top',
 			'sticky_notification_bar_desktop_height' => '',
 			'sticky_notification_bar_background_color'      => '',
+			'sticky_notification_button_background_color'      => '',
 			'sticky_notification_bar_text_color'            => '',
-			'sticky_notification_bar_message'               => "Display your notification bar message here.",
+			'sticky_notification_button_text_color'            => '',
+			'sticky_notification_bar_message'               => esc_html__('Display your notification bar message here.', 'lhotse-sticky-menu'),
+			'sticky_notification_bar_button_message'               => esc_html__('Display your notification bar button message here.', 'lhotse-sticky-menu'),
+			'sticky_notification_bar_button_link'               => '',
 			'sticky_notification_bar_opacity'               => '1',
 			'sticky_notification_bar_desktop_font_size'     => '',
-			'enable_only_on_home'          => 1,
 		);
-		if ( current_theme_supports( 'lhotse-sticky-notification-bar' ) ) {
+
+			if ( current_theme_supports( 'lhotse-sticky-notification-bar' ) ) {
 			$lhotse_sticky_notification_bar_support = get_theme_support( 'lhotse-sticky-notification-bar' );
-			$default_options['sticky_desktop_notification_bar_selector'] = isset( $lhotse_sticky_notification_bar_support[0]['sticky_desktop_notification_bar_selector'] ) ? $lhotse_sticky_sidebar_support[0]['sticky_desktop_notification_bar_selector'] : '';
 			$default_options['sticky_notification_bar_background_color']      = isset( $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_background_color'] ) ? $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_background_color'] : '';
+			$default_options['enable'] = isset( $lhotse_sticky_notification_bar_support[0]['enable'] ) ? $lhotse_sticky_notification_bar_support[0]['enable'] : '';
+			$default_options['sticky_notification_button_background_color']      = isset( $lhotse_sticky_notification_bar_support[0]['sticky_notification_button_background_color'] ) ? $lhotse_sticky_notification_bar_support[0]['sticky_notification_button_background_color'] : '';
 			$default_options['sticky_notification_bar_message']      = isset( $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_message'] ) ? $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_message'] : '';
+			$default_options['sticky_notification_bar_button_message']      = isset( $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_button_message'] ) ? $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_button_message'] : '';
+			$default_options['sticky_notification_bar_button_link']      = isset( $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_button_link'] ) ? $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_button_link'] : '';
 			$default_options['sticky_notification_bar_text_color']            = isset( $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_text_color'] ) ? $lhotse_sticky_notification_bar_support[0]['sticky_notification_bar_text_color'] : '';
+			$default_options['sticky_notification_button_text_color']            = isset( $lhotse_sticky_notification_bar_support[0]['sticky_notification_button_text_color'] ) ? $lhotse_sticky_notification_bar_support[0]['sticky_notification_button_text_color'] : '';
 		}
 		if( null == $option ) {
 			return apply_filters( 'lhotse_sticky_notification_bar_options', $default_options );
@@ -175,14 +190,122 @@ if ( ! function_exists( 'lhotse_sticky_notification_bar_default_options' ) ) :
 endif;
 
 
+function add_notification_script(){
+	echo '<script>
+		// display the data from default option on message bar in Notification Bar
+		var default_options = '.json_encode(lhotse_sticky_notification_bar_default_options()).';
+		message_bar.innerHTML = message;
+		
+	</script>';
+}
+add_action('wp_footer', 'add_notification_script');
+// Add inline styles or custom CSS classes
+function add_notification_styles() {
+	$default_options = lhotse_sticky_notification_bar_get_options();
+    echo '<style>
+        /* Custom styles for the notification bar */
+        .sticky-notification-bar {
+            background-color: '.$default_options['sticky_notification_bar_background_color'].';
+            padding: 10px;
+			color: '.$default_options['sticky_notification_bar_text_color'].';
+			opacity: '.$default_options['sticky_notification_bar_opacity'].';
+			font-size: '.$default_options['sticky_notification_bar_desktop_font_size'].'px;
+			position: '.$default_options['sticky_desktop_notification_bar_postion'].';
+			height: '.$default_options['sticky_notification_bar_desktop_height'].'px;
+			text-align: center;
+			margin: auto;
+        }
+		button[type=submit] {
+			background-color: '.$default_options['sticky_notification_button_background_color'].';
+			margin: 0px 0px 10px 10px;
+		}
+		button[type=submit] a{
+			color: '.$default_options['sticky_notification_button_text_color'].';	
+		}
+    </style>';
+}
+add_action('wp_head', 'add_notification_styles');
+
+// $default_options['sticky_notification_bar_message'] = 'testing';
+function display_notification_bar(){
+	$default_options = lhotse_sticky_notification_bar_get_options();
+	if($default_options['enable']==1){
+		echo '<div class="sticky-notification-bar"> <p>'.$default_options['sticky_notification_bar_message'].'<button type="submit" value="'.$default_options['sticky_notification_bar_button_message'].'"><a href="'.$default_options['sticky_notification_bar_button_link'].'" target="_blank">'.$default_options['sticky_notification_bar_button_message'].'</a></button></p></div>';
+	}else{
+		echo '';
+	}
+}
+add_action('wp_head', 'is_enable_disable_enabled');
+is_enable_disable_enabled();
+// render_checkbox(1);
+// add_action('wp_head', 'render_checkbox');
+add_action('wp_body_open', 'display_notification_bar');
 
 function run_lhotse_sticky_menu() {
 	$plugin = new Lhotse_Sticky_Menu();
 	$plugin->run();
 }
 run_lhotse_sticky_menu();
-/* CTP tabs removal options */
-require plugin_dir_path( __FILE__ ) . '/includes/ctp-tabs-removal.php';
 
- $ctp_options = ctp_get_options();
+//  $ctp_options = ctp_get_options();
 endif;
+
+// Register the plugin's settings
+// function my_enable_disable_plugin_settings_init() {
+//     // Define a new settings field
+//     add_settings_section('my_enable_disable_section', 'Enable/Disable Settings', 'my_enable_disable_section_callback', 'Lhotse Sticky Menu');
+    
+//     // Add the checkbox field to the settings section
+//     add_settings_field('my_enable_disable_checkbox', 'Enable/Disable', 'my_enable_disable_checkbox_callback', 'Lhotse Sticky Menu', 'my_enable_disable_section');
+    
+//     // Register the field
+//     register_setting('Lhotse Sticky Menu', 'my_enable_disable_checkbox', 'esc_attr');
+// }
+// add_action('admin_init', 'my_enable_disable_plugin_settings_init');
+
+// // Callback function to display the section description
+// function my_enable_disable_section_callback() {
+//     echo '<p>Select whether to enable or disable the functionality.</p>';
+// }
+
+// // Callback function to display the checkbox field
+// function my_enable_disable_checkbox_callback() {
+//     $value = get_option('my_enable_disable_checkbox');
+//     echo '<input type="checkbox" id="my_enable_disable_checkbox" name="my_enable_disable_checkbox" value="1" ' . checked(1, $value, false) . '/>';
+// }
+
+// // Display the checkbox field in the General Settings page
+// function my_enable_disable_plugin_settings_page() {
+//     ?>
+<!-- //     <div class="wrap"> -->
+<!-- //         <h1>My Enable Disable Plugin</h1> -->
+<!-- //         <form method="post" action="options.php"> -->
+             <?php
+//             settings_fields('general');
+//             do_settings_sections('general');
+//             submit_button();
+            // ?>
+<!-- //         </form> -->
+<!-- //     </div> -->
+     <?php
+// }
+
+
+// Custom function to check if the functionality is enabled or disabled
+function is_enable_disable_enabled() {
+    $value = get_option('enable');
+	if($value==1){
+		echo "lhotse";
+	}else {
+		echo "not work";
+	}
+    return $value == '1';
+	echo '';
+	$default_options = lhotse_sticky_notification_bar_get_options();
+	if($default_options['enable']==1){
+		echo '<div class="sticky-notification-bar"> <p>'.$default_options['sticky_notification_bar_message'].'<button type="submit" value="'.$default_options['sticky_notification_bar_button_message'].'"><a href="'.$default_options['sticky_notification_bar_button_link'].'" target="_blank">'.$default_options['sticky_notification_bar_button_message'].'</a></button></p></div>';
+	}else{
+		echo '';
+	}
+}
+?>

@@ -154,42 +154,48 @@
         <div id="notification-bar" class="wpcatchtab save">
             <div class="content-wrapper col-3">
                 <div class="header">
-                    <h3><?php esc_html_e( 'Notification Bar', 'lhotse-sticky-notification-bar' );?></h3>
+                    
                     <div class="content">
                         <?php if( isset($_GET['settings-updated']) ) { ?>
-
-                        <?php } ?>
-                        <?php // Use nonce for verification.
+                            
+                            <?php } ?>
+                            <?php // Use nonce for verification.
 				wp_nonce_field( basename( __FILE__ ), 'lhotse_sticky_notification_bar_nounce' );
-			?>
+                ?>
                         <div id="sticky_main">
-
+                            
                             <form method="post" action="options.php">
                                 <?php settings_fields( 'lhotse-sticky-menu-group' ); ?>
                                 <?php
 					            $defaults =lhotse_sticky_notification_bar_default_options();
 					            $settings = lhotse_sticky_notification_bar_get_options();
-					?>
+                                ?>
                                 <div class="option-container">
                                     <table class="form-table">
                                         <tbody>
-                                            <thead>
-                                                <tr>
-                                                    <th>Bar Settings</th>
-                                                </tr>
-                                            </thead>
+                                            <tr>
+                                                <td style="font-size:22px; margin-top:10px">Bar Settings</td>
+                                                <h3>
+                                                <?php esc_html_e( 'Notification Bar ', 'lhotse-sticky-notification-bar' );?>
+                                                <?php 
+                                                // $value = get_option('enable');
+                                                $checked = isset( $_POST['enable'] ) ? ' checked="checked"' : '';
+                                                ?>
+                                                <input type="checkbox" name="lhotse_sticky_notification_bar_options[enable]" id="enable" value="1"  <?php echo $settings['enable']==0 ? 'checked' : '';?>>
+                                            </h3>
+                                            </tr>
                                             <tr>
                                                 <th>
                                                     <label><?php esc_html_e( ' Position', 'lhotse-sticky-notification-bar' ); ?></label>
-                                                </th>
+                                                </th>                                        
                                                 <td>
                                                     <label>
 
                                                         <input type="radio"
                                                             name="lhotse_sticky_notification_bar_options[sticky_desktop_notification_bar_position]"
                                                             id="sticky-desktop-notification-bar-position"
-                                                            class="sticky-desktop-notificationbar-position" value="Top"
-                                                             checked />
+                                                            class="sticky-desktop-notificationbar-position" value="1"
+                                                             <?php echo $settings['sticky_desktop_notification_bar_position']==1 ? 'checked' : '' ?> />
                                                         <?php _e("Top", 'lhotse-sticky-menu'); ?>
                                                     </label>
                                                     <label>
@@ -198,7 +204,7 @@
                                                             name="lhotse_sticky_notification_bar_options[sticky_desktop_notification_bar_position]"
                                                             id="sticky-desktop-notification-bar-position"
                                                             class="sticky-desktop-notification-bar-position"
-                                                            value="Bottom" />
+                                                            value="0" <?php echo $settings['sticky_desktop_notification_bar_position']==0 ? 'checked' : '' ?> />
                                                         <?php _e("Bottom", 'lhotse-sticky-menu'); ?>
                                                     </label>
 
@@ -220,8 +226,10 @@
                                                         title="<?php esc_html_e( 'Sets your desired height size to Notification bar. Default is set to null, and takes theme\'s font size.', 'lhotse-sticky-notification-sidebar' ); ?>"></span>
                                                 </td>
                                             </tr>
-                                            <th>
-                                                <label><?php esc_html_e( 'Notification Bar Background Color', 'lhotse-sticky-notification-bar' ); ?></label>
+                                            <tr>
+
+                                                <th>
+                                                    <label><?php esc_html_e( 'Notification Bar Background Color', 'lhotse-sticky-notification-bar' ); ?></label>
                                             </th>
                                             <td>
                                                 <input type="text"
@@ -230,8 +238,21 @@
                                                     data-alpha="true"
                                                     value="<?php echo esc_attr( $settings['sticky_notification_bar_background_color'] ); ?>" />
                                             </td>
-                                            </tr>
-                                            </tr>
+                                        </tr>
+                                            <tr>
+
+                                                <th>
+                                                    <label><?php esc_html_e( 'Notification Button Background Color', 'lhotse-sticky-notification-bar' ); ?></label>
+                                            </th>
+                                            <td>
+                                                <input type="text"
+                                                    name="lhotse_sticky_notification_bar_options[sticky_notification_button_background_color]"
+                                                    id="sticky-notification-button-background-color" class="color-picker"
+                                                    data-alpha="true"
+                                                    value="<?php echo esc_attr( $settings['sticky_notification_button_background_color'] ); ?>" />
+                                            </td>
+                                        </tr>
+                                            <tr>
                                             <th>
                                                 <label><?php esc_html_e( 'Notification Bar Text Color', 'lhotse-sticky-notification-bar' ); ?></label>
                                             </th>
@@ -244,11 +265,24 @@
                                                     value="<?php echo esc_attr( $settings['sticky_notification_bar_text_color'] ); ?>" />
                                             </td>
                                             </tr>
+                                            <tr>
+                                            <th>
+                                                <label><?php esc_html_e( 'Notification Button Text Color', 'lhotse-sticky-notification-bar' ); ?></label>
+                                            </th>
+
+                                            <td>
+                                                <input type="text"
+                                                    name="lhotse_sticky_notification_bar_options[sticky_notification_button_text_color]"
+                                                    id="sticky-notification-button-text-color" class="color-picker"
+                                                    data-alpha="true"
+                                                    value="<?php echo esc_attr( $settings['sticky_notification_button_text_color'] ); ?>" />
+                                            </td>
+                                            </tr>
 
 
                                             <tr>
                                                 <th>
-                                                    <label><?php esc_html_e( 'Notfication Message', 'lhotse-sticky-notification-bar' ); ?></label>
+                                                    <label><?php esc_html_e( 'Notification Message', 'lhotse-sticky-notification-bar' ); ?></label>
                                                 </th>
                                                 <td>
                                                 <input type="text" style="height: 100px; width: 50%;"
@@ -256,6 +290,34 @@
                                                         id="sticky-notification-bar-message" placeholder="Enter Text Here"
                                                 class="sticky-desktop-message"
                                                         value="<?php echo esc_attr( $settings['sticky_notification_bar_message'] ); ?>" />
+                                                    <span class="dashicons dashicons-info tooltip"
+                                                        title="<?php esc_html_e( 'Notification-bar helps to set the stack order of the element. An element with greater stack order is always in front.', 'lhotse-sticky-notification-bar' ); ?>"></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    <label><?php esc_html_e( 'Notification Button Link', 'lhotse-sticky-notification-bar' ); ?></label>
+                                                </th>
+                                                <td>
+                                                <input type="text" style="height: 100%; width: 50%;"
+                                                        name="lhotse_sticky_notification_bar_options[sticky_notification_bar_button_link]"
+                                                        id="sticky-notification-bar-button-link" placeholder="Enter Link Here"
+                                                class="sticky-desktop-button-link"
+                                                        value="<?php echo esc_attr( $settings['sticky_notification_bar_button_link'] ); ?>" />
+                                                    <span class="dashicons dashicons-info tooltip"
+                                                        title="<?php esc_html_e( 'Notification-bar helps to set the stack order of the element. An element with greater stack order is always in front.', 'lhotse-sticky-notification-bar' ); ?>"></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    <label><?php esc_html_e( 'Notification Button Text', 'lhotse-sticky-notification-bar' ); ?></label>
+                                                </th>
+                                                <td>
+                                                <input type="text" style="height: 100% width: 50%;"
+                                                        name="lhotse_sticky_notification_bar_options[sticky_notification_bar_button_message]"
+                                                        id="sticky-notification-bar-button-message" placeholder="Enter Text Here"
+                                                class="sticky-desktop-button-message"
+                                                        value="<?php echo esc_attr( $settings['sticky_notification_bar_button_message'] ); ?>" />
                                                     <span class="dashicons dashicons-info tooltip"
                                                         title="<?php esc_html_e( 'Notification-bar helps to set the stack order of the element. An element with greater stack order is always in front.', 'lhotse-sticky-notification-bar' ); ?>"></span>
                                                 </td>
@@ -299,6 +361,10 @@
                             </form>
                         </div>
                         <!-- End sticky sidebar -->
+                        <!-- Add display notification setting -->
+                        
+                        <!-- End display notification setting -->
+                        
 
                     </div><!-- .content -->
                 </div><!-- .header -->
@@ -313,8 +379,5 @@
     <?php require_once plugin_dir_path( dirname( __FILE__ ) ) . 'partials/dashboard-display.php';?>
 </div>
 </form><!-- sticky-main -->
-
-
-
 </div><!-- .lhotsep_widget_settings -->
 </div><!-- .wrap -->
